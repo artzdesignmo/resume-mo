@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resume Mo — A Résumé Studio That Updates As You Type</title>
+<meta name="description" content="Resume Mo: a free, offline, single-file résumé studio. Six templates, live A4 preview, JSON save/load, print-ready export.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Noto+Sans+TC:wght@400;500;700&family=Inter:wght@400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+/* ---------- OpenX design spec: default light silver-grey, white / silver / black switch, saved in localStorage ---------- */
+:root{--bg:#e9e9e7;--panel:#f4f4f2;--card:#ffffff;--ink:#222222;--muted:#6f6d68;--line:#d8d8d4;--accent:#3a6ea5;--silver:#8a867e}
+body[data-theme="white"]{--bg:#ffffff;--panel:#f7f7f7;--card:#ffffff;--line:#e2e2e2}
+body[data-theme="black"]{--bg:#171717;--panel:#1f1f1f;--card:#242424;--ink:#ececec;--muted:#a8a8a8;--line:#333}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,"Noto Sans TC",system-ui,sans-serif}
+h1,h2,.dela{font-family:"Dela Gothic One","Noto Sans TC",sans-serif;font-weight:400}
+header.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--panel);border-bottom:1px solid var(--line)}
+header.top h1{font-size:22px;margin:0;letter-spacing:.5px}
+header.top h1 span{color:var(--silver)}
+header.top .tag{font-size:12px;color:var(--muted);max-width:340px}
+.spacer{flex:1}
+button,select,input,textarea{font:inherit}
+.btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:7px 13px;cursor:pointer;font-size:13px}
+.btn:hover{border-color:var(--silver)}
+.btn.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.btn.acc{background:var(--accent);color:#fff;border-color:var(--accent)}
+.iconbtn{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--card);cursor:pointer;font-size:15px;color:var(--silver);display:inline-flex;align-items:center;justify-content:center;text-decoration:none}
+main{display:grid;grid-template-columns:400px 1fr;gap:16px;padding:16px;align-items:start}
+@media(max-width:900px){main{grid-template-columns:1fr}header.top .tag{display:none}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px}
+.panel h2{font-size:15px;margin:4px 0 10px}
+.panel h3{font-size:13px;margin:16px 0 6px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+label{font-size:12px;color:var(--muted);display:block;margin:8px 0 3px}
+input[type=text],input[type=email],input[type=tel],textarea,select{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink)}
+textarea{resize:vertical;min-height:64px}
+.row{display:flex;gap:8px}.row>*{flex:1;min-width:0}
+.item{border:1px solid var(--line);border-radius:12px;padding:10px;background:var(--card);margin-bottom:8px}
+.item .mini{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.chipbtn{border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:4px 10px;cursor:pointer;font-size:12px;color:var(--ink)}
+.tplgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.tpl{border:2px solid var(--line);border-radius:10px;padding:10px;cursor:pointer;background:var(--card);text-align:left}
+.tpl.on{border-color:var(--accent)}
+.tpl b{display:block;font-size:13px}.tpl span{font-size:11px;color:var(--muted)}
+.tpl .lock{color:#b7791f}
+.accgrid{display:flex;gap:8px;flex-wrap:wrap}
+.swatch{width:30px;height:30px;border-radius:50%;border:2px solid transparent;cursor:pointer}
+.swatch.on{border-color:var(--ink)}
+.stats{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.stat{flex:1;min-width:90px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px;text-align:center}
+.stat b{font-size:18px;display:block}.stat span{font-size:11px;color:var(--muted)}
+.bar{height:6px;background:var(--line);border-radius:99px;overflow:hidden;margin-top:4px}
+.bar i{display:block;height:100%;background:var(--accent)}
+/* ---------- A4 preview ---------- */
+.stage{display:flex;flex-direction:column;align-items:center;gap:10px}
+.sheet{width:794px;max-width:100%;aspect-ratio:210/297;background:#fff;color:#222;box-shadow:0 12px 40px rgba(0,0,0,.18);overflow:hidden;transform-origin:top center}
+@media(max-width:1100px){.sheet{transform:scale(.82);margin-bottom:-130px}}
+@media(max-width:900px){.sheet{transform:none;margin-bottom:0}}
+.cv{padding:48px 52px;height:100%;font-size:13.5px;line-height:1.5;--ac:var(--accent)}
+.cv h3{font-size:12px;letter-spacing:.14em;text-transform:uppercase;border-bottom:2px solid var(--ac);padding-bottom:4px;margin:20px 0 8px;color:var(--ac)}
+.cv .name{font-family:"Dela Gothic One",serif;font-size:34px;line-height:1.1;margin:0}
+.cv .role{font-size:16px;color:#555;margin:4px 0}
+.cv .meta{font-size:12px;color:#666}
+.cv .job{display:flex;justify-content:space-between;gap:12px}.cv .job b{font-size:14px}.cv .job .when{white-space:nowrap;color:#777;font-size:12px}
+.cv .job p,.cv .edu p{margin:2px 0 10px}
+.cv .skillrow{display:flex;align-items:center;gap:8px;margin:4px 0}.cv .skillrow span:first-child{width:110px}
+.cv .dots{letter-spacing:2px;color:var(--ac)}
+/* template variants */
+.cv.tpl-modern{display:grid;grid-template-columns:200px 1fr;gap:0;padding:0}
+.cv.tpl-modern .side{background:var(--ac);color:#fff;padding:36px 24px;height:100%}
+.cv.tpl-modern .side h3{color:#fff;border-color:rgba(255,255,255,.5)}
+.cv.tpl-modern .main{padding:36px 32px}
+.cv.tpl-modern .side .skillrow{display:block}
+.cv.tpl-modern .side .skillrow span:first-child{width:auto}
+.cv.tpl-modern .side .dots{color:#fff}
+.cv.tpl-minimal{font-family:Georgia,serif}.cv.tpl-minimal .name{font-family:Georgia,serif;font-weight:400;letter-spacing:.02em}
+.cv.tpl-bold .hero{background:#111;color:#fff;margin:-48px -52px 20px;padding:48px 52px}
+.cv.tpl-bold .hero .name{font-size:44px}.cv.tpl-bold .hero .role,.cv.tpl-bold .hero .meta{color:#ddd}
+.cv.tpl-creative{display:grid;grid-template-columns:1fr 210px;gap:28px}
+.cv.tpl-creative .side2{background:#f2f0ea;border-radius:14px;padding:18px}
+.cv.tpl-exec .topline{border-top:8px solid var(--ac);margin:-48px -52px 20px;padding:28px 52px 0}
+.hint{font-size:12px;color:var(--muted);text-align:center;max-width:640px}
+/* modal */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:50}
+.modal.open{display:flex}
+.modal .box{background:var(--card);color:var(--ink);border-radius:16px;padding:22px;max-width:420px;width:92%}
+@media print{
+  body{background:#fff} header.top,main .panel,.stage>p,.hint,.modal{display:none!important}
+  main{display:block;padding:0} .sheet{box-shadow:none;width:100%;max-width:none;transform:none;aspect-ratio:auto}
+  .cv{height:auto}
+}
+</style>
+</head>
+<body data-theme="silver">
+<header class="top">
+  <h1>RESUME <span>MO</span></h1>
+  <span class="tag" id="tagline">A résumé studio that updates as you type.</span>
+  <div class="spacer"></div>
+  <button class="btn" id="printBtn">⎙ Print / PDF</button>
+  <button class="btn" id="jsonBtn">↓ JSON</button>
+  <button class="btn" id="loadBtn">↑ Load JSON</button>
+  <input type="file" id="fileIn" accept=".json" hidden>
+  <button class="btn" id="sampleBtn">↺ Sample</button>
+  <button class="btn acc" id="proBtn">◆ Pro</button>
+  <a class="iconbtn" href="https://buymeacoffee.com/whynotartmoney" target="_blank" rel="noopener" title="Buy Me a Coffee">☕</a>
+  <button class="iconbtn" id="themeBtn" title="Theme: white / silver / black">◐</button>
+  <button class="iconbtn" id="langBtn" title="EN / 繁中">EN</button>
+</header>
+<main>
+  <section class="panel" id="editor">
+    <h2 id="edTitle">Edit your résumé</h2>
+    <div class="stats">
+      <div class="stat"><b id="stComplete">0%</b><span id="stCompleteL">Complete</span></div>
+      <div class="stat"><b id="stWords">0</b><span id="stWordsL">Words</span></div>
+      <div class="stat"><b id="stSecs">0</b><span id="stSecsL">Sections filled</span></div>
+    </div>
+    <div id="atsBox"></div>
+    <h3 id="tplTitle">Template</h3>
+    <div class="tplgrid" id="tplGrid"></div>
+    <h3 id="accTitle">Accent colour</h3>
+    <div class="accgrid" id="accGrid"></div>
+    <h3 id="profTitle">Profile</h3>
+    <label id="lName">Full name</label><input type="text" id="fName">
+    <label id="lRole">Job title</label><input type="text" id="fRole">
+    <div class="row"><div><label>Email</label><input type="email" id="fEmail"></div><div><label id="lPhone">Phone</label><input type="tel" id="fPhone"></div></div>
+    <div class="row"><div><label id="lLoc">Location</label><input type="text" id="fLoc"></div><div><label>Website</label><input type="text" id="fWeb"></div></div>
+    <label id="lSum">Summary</label><textarea id="fSum"></textarea>
+    <label id="lPhoto">Photo (stays on this device)</label><input type="file" id="fPhoto" accept="image/*">
+    <h3 id="expTitle">Experience</h3><div id="expList"></div>
+    <button class="btn" id="addExp">+ Add job</button>
+    <h3 id="eduTitle">Education</h3><div id="eduList"></div>
+    <button class="btn" id="addEdu">+ Add school</button>
+    <h3 id="skTitle">Skills</h3><div id="skList"></div>
+    <button class="btn" id="addSk">+ Add skill</button>
+    <h3 id="langTitle">Languages</h3><div id="langList"></div>
+    <button class="btn" id="addLang">+ Add language</button>
+    <p class="hint" id="privNote">Everything runs in your browser. Nothing is uploaded — your résumé is saved only in this browser's localStorage.</p>
+  </section>
+  <section class="stage">
+    <div class="sheet"><div class="cv" id="cv"></div></div>
+    <p class="hint" id="stageHint">Tip: pick a template, edit on the left, then Print → Save as PDF for a print-ready A4 file.</p>
+  </section>
+</main>
+<div class="modal" id="proModal"><div class="box">
+  <h2 id="proTitle" style="margin-top:0">OpenX Pro</h2>
+  <p id="proText">Premium templates and the ATS keyword check are OpenX Pro features. Enter your Pro key to unlock them on this device.</p>
+  <input type="text" id="proKey" placeholder="Pro key">
+  <p id="proMsg" style="font-size:13px;color:#b7791f"></p>
+  <div style="display:flex;gap:8px;margin-top:12px">
+    <button class="btn primary" id="proUnlock">Unlock</button>
+    <a class="btn" href="https://buymeacoffee.com/whynotartmoney" target="_blank" rel="noopener">Get a Pro key</a>
+    <button class="btn" id="proClose">Close</button>
+  </div>
+</div></div>
+<script>
+/* ---------- state: fictional sample data only, never real user data ---------- */
+const SAMPLE = {
+  profile: { name: "Maya Lin", role: "Product Designer", email: "maya.lin@example.com", phone: "+1 415 555 0132", loc: "San Francisco, CA", web: "mayalin.design", summary: "Product designer with 6 years turning messy problems into calm, usable products. I lead design from discovery to launch, and I measure success in shipped outcomes, not mockups." },
+  exp: [
+    { role: "Senior Product Designer", org: "Northwind Studio", when: "2022 — now", desc: "Lead designer for a checkout redesign that lifted conversion by 18%. Built the studio design system used by 4 product teams." },
+    { role: "Product Designer", org: "Fieldnote Labs", when: "2019 — 2022", desc: "Designed a mobile research app from zero to 40k users. Ran weekly usability tests and cut onboarding drop-off by a third." }
+  ],
+  edu: [ { school: "California College of the Arts", deg: "BFA, Interaction Design", when: "2015 — 2019" } ],
+  skills: [ { n: "Product strategy", l: 5 }, { n: "Figma & prototyping", l: 5 }, { n: "Design systems", l: 4 }, { n: "User research", l: 4 } ],
+  langs: [ { n: "English", l: "Native" }, { n: "Mandarin", l: "Fluent" } ]
+};
+const TPLS = [
+  { id: "classic", name: "Classic", zh: "經典", pro: false },
+  { id: "modern", name: "Modern", zh: "現代", pro: false },
+  { id: "minimal", name: "Minimal", zh: "極簡", pro: false },
+  { id: "bold", name: "Bold", zh: "大膽", pro: true },
+  { id: "creative", name: "Creative", zh: "創意", pro: true },
+  { id: "exec", name: "Executive", zh: "主管", pro: true }
+];
+const ACCENTS = ["#3a6ea5", "#b7791f", "#2e7d5b", "#7a4a8c", "#b3402f", "#222222", "#0f766e", "#8a867e"];
+const ATS_WORDS = ["leadership", "design", "research", "prototype", "system", "data", "collaboration", "launch", "growth", "strategy"];
+let lang = "en", theme = "silver", tpl = "classic", accent = ACCENTS[0], photo = "";
+let S = JSON.parse(JSON.stringify(SAMPLE));
+try {
+  const saved = JSON.parse(localStorage.getItem("resume-mo") || "null");
+  if (saved && saved.profile) S = saved;
+  lang = localStorage.getItem("resume-mo-lang") || "en";
+  theme = localStorage.getItem("resume-mo-theme") || "silver";
+  tpl = localStorage.getItem("resume-mo-tpl") || "classic";
+  accent = localStorage.getItem("resume-mo-accent") || ACCENTS[0];
+} catch (e) {}
+const STR = {
+  en: { tag: "A résumé studio that updates as you type.", ed: "Edit your résumé", complete: "Complete", words: "Words", secs: "Sections filled", tpl: "Template", acc: "Accent colour", prof: "Profile", name: "Full name", role: "Job title", phone: "Phone", loc: "Location", sum: "Summary", photo: "Photo (stays on this device)", exp: "Experience", edu: "Education", sk: "Skills", lg: "Languages", priv: "Everything runs in your browser. Nothing is uploaded — your résumé is saved only in this browser's localStorage.", tip: "Tip: pick a template, edit on the left, then Print → Save as PDF for a print-ready A4 file.", addJob: "+ Add job", addSch: "+ Add school", addSk: "+ Add skill", addLg: "+ Add language", pro: "Pro", atsLock: "ATS keyword check is a Pro feature — unlock to see which hiring keywords your résumé already covers.", atsTitle: "ATS keyword check (Pro)" },
+  zh: { tag: "打字即時更新嘅履歷工作室。", ed: "編輯你嘅履歷", complete: "完成度", words: "字數", secs: "已填欄目", tpl: "模板", acc: "主題色", prof: "個人資料", name: "姓名", role: "職位", phone: "電話", loc: "地區", sum: "簡介", photo: "相片（只留喺呢部裝置）", exp: "工作經驗", edu: "學歷", sk: "技能", lg: "語言", priv: "全部喺瀏覽器內運行，唔會上傳——履歷只儲存喺呢個瀏覽器嘅 localStorage。", tip: "提示：揀個模板，左邊改完之後按列印 → 另存為 PDF，就係可列印嘅 A4 檔案。", addJob: "+ 加工作", addSch: "+ 加學歷", addSk: "+ 加技能", addLg: "+ 加語言", pro: "Pro", atsLock: "ATS 關鍵字檢查係 Pro 功能——解鎖後可以睇你嘅履歷已經覆蓋咗幾多招聘關鍵字。", atsTitle: "ATS 關鍵字檢查（Pro）" }
+};
+const T = k => (STR[lang] || STR.en)[k];
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const isPro = () => { try { return localStorage.getItem("openx-pro-ok") === "1"; } catch (e) { return false; } };
+const $ = id => document.getElementById(id);
+function save() { try { localStorage.setItem("resume-mo", JSON.stringify(S)); localStorage.setItem("resume-mo-lang", lang); localStorage.setItem("resume-mo-theme", theme); localStorage.setItem("resume-mo-tpl", tpl); localStorage.setItem("resume-mo-accent", accent); } catch (e) {} }
+function dots(l) { return "●".repeat(l) + "○".repeat(5 - l); }
+function listHTML(title, items) { return items.length ? "<h3>" + title + "</h3>" + items : ""; }
+/* ---------- preview renderer: one function, six layouts via CSS classes ---------- */
+function renderCV() {
+  const p = S.profile, cv = $("cv");
+  cv.className = "cv tpl-" + tpl;
+  cv.style.setProperty("--ac", accent);
+  const meta = [p.email, p.phone, p.loc, p.web].filter(Boolean).join(" · ");
+  const exp = S.exp.map(j => "<div class=\"job\"><div><b>" + esc(j.role) + "</b> · " + esc(j.org) + "<p>" + esc(j.desc) + "</p></div><span class=\"when\">" + esc(j.when) + "</span></div>").join("");
+  const edu = S.edu.map(e => "<div class=\"job\"><div><b>" + esc(e.school) + "</b> · " + esc(e.deg) + "</div><span class=\"when\">" + esc(e.when) + "</span></div>").join("");
+  const skills = S.skills.map(s => "<div class=\"skillrow\"><span>" + esc(s.n) + "</span><span class=\"dots\">" + dots(s.l) + "</span></div>").join("");
+  const langs = S.langs.map(l => "<div>" + esc(l.n) + " — " + esc(l.l) + "</div>").join("");
+  const photoTag = photo ? "<img src=\"" + photo + "\" style=\"width:96px;height:96px;object-fit:cover;border-radius:50%;float:right;margin:0 0 12px 16px\">" : "";
+  const head = photoTag + "<p class=\"name\">" + esc(p.name || "Your Name") + "</p><p class=\"role\">" + esc(p.role) + "</p><p class=\"meta\">" + esc(meta) + "</p>";
+  const body = (p.summary ? "<h3>Summary</h3><p>" + esc(p.summary) + "</p>" : "") + (exp ? "<h3>Experience</h3>" + exp : "") + (edu ? "<h3>Education</h3>" + edu : "");
+  const side = (skills ? "<h3>Skills</h3>" + skills : "") + (langs ? "<h3>Languages</h3>" + langs : "");
+  if (tpl === "modern") cv.innerHTML = "<div class=\"side\">" + side + "</div><div class=\"main\">" + head + body + "</div>";
+  else if (tpl === "bold") cv.innerHTML = "<div class=\"hero\">" + head + "</div>" + body + side;
+  else if (tpl === "creative") cv.innerHTML = "<div><div>" + head + "</div>" + body + "</div><div class=\"side2\">" + side + "</div>";
+  else if (tpl === "exec") cv.innerHTML = "<div class=\"topline\">" + head + "</div>" + body + side;
+  else cv.innerHTML = head + body + side;
+  /* stats */
+  const text = [p.name, p.role, p.summary].concat(S.exp.map(j => j.role + " " + j.desc), S.edu.map(e => e.school), S.skills.map(s => s.n)).join(" ");
+  const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+  const filled = [p.name, p.role, p.summary, S.exp.length, S.edu.length, S.skills.length].filter(Boolean).length;
+  $("stWords").textContent = words;
+  $("stComplete").textContent = Math.round(filled / 6 * 100) + "%";
+  $("stSecs").textContent = filled + " / 6";
+  /* ATS: Pro only */
+  const box = $("atsBox");
+  if (!isPro()) box.innerHTML = "<p style=\"font-size:12px;color:var(--muted)\">🔒 " + T("atsLock") + "</p>";
+  else {
+    const low = text.toLowerCase(), hits = ATS_WORDS.filter(w => low.includes(w));
+    box.innerHTML = "<p style=\"font-size:12px\"><b>" + T("atsTitle") + ":</b> " + hits.length + " / " + ATS_WORDS.length + " — " + hits.join(", ") + "</p>";
+  }
+}
+/* ---------- editor renderer ---------- */
+function itemEditor(list, idx, fields, onChange) {
+  const d = document.createElement("div"); d.className = "item";
+  fields.forEach(f => {
+    const lab = document.createElement("label"); lab.textContent = f.label;
+    const inp = f.area ? document.createElement("textarea") : document.createElement("input");
+    inp.value = list[idx][f.key] || "";
+    inp.oninput = () => { list[idx][f.key] = f.num ? (+inp.value || 1) : inp.value; save(); renderCV(); };
+    d.append(lab, inp);
+  });
+  const mini = document.createElement("div"); mini.className = "mini";
+  const up = document.createElement("button"); up.className = "chipbtn"; up.textContent = "↑";
+  up.onclick = () => { if (idx > 0) { [list[idx - 1], list[idx]] = [list[idx], list[idx - 1]]; save(); renderEditor(); } };
+  const dn = document.createElement("button"); dn.className = "chipbtn"; dn.textContent = "↓";
+  dn.onclick = () => { if (idx < list.length - 1) { [list[idx + 1], list[idx]] = [list[idx], list[idx + 1]]; save(); renderEditor(); } };
+  const del = document.createElement("button"); del.className = "chipbtn"; del.textContent = "✕ Remove";
+  del.onclick = () => { list.splice(idx, 1); save(); renderEditor(); };
+  mini.append(up, dn, del); d.append(mini); return d;
+}
+function renderEditor() {
+  $("fName").value = S.profile.name; $("fRole").value = S.profile.role; $("fEmail").value = S.profile.email;
+  $("fPhone").value = S.profile.phone; $("fLoc").value = S.profile.loc; $("fWeb").value = S.profile.web; $("fSum").value = S.profile.summary;
+  const expEl = $("expList"); expEl.innerHTML = ""; S.exp.forEach((_, i) => expEl.append(itemEditor(S.exp, i, [{ key: "role", label: "Role" }, { key: "org", label: "Organisation" }, { key: "when", label: "Dates" }, { key: "desc", label: "Description", area: true }])));
+  const eduEl = $("eduList"); eduEl.innerHTML = ""; S.edu.forEach((_, i) => eduEl.append(itemEditor(S.edu, i, [{ key: "school", label: "School" }, { key: "deg", label: "Degree" }, { key: "when", label: "Dates" }])));
+  const skEl = $("skList"); skEl.innerHTML = ""; S.skills.forEach((_, i) => skEl.append(itemEditor(S.skills, i, [{ key: "n", label: "Skill" }, { key: "l", label: "Level 1–5", num: true }])));
+  const lgEl = $("langList"); lgEl.innerHTML = ""; S.langs.forEach((_, i) => lgEl.append(itemEditor(S.langs, i, [{ key: "n", label: "Language" }, { key: "l", label: "Level" }])));
+  /* templates + accents */
+  const tg = $("tplGrid"); tg.innerHTML = "";
+  TPLS.forEach(t => {
+    const b = document.createElement("button"); b.className = "tpl" + (tpl === t.id ? " on" : "");
+    b.innerHTML = "<b>" + (lang === "zh" ? t.zh : t.name) + (t.pro ? " <span class=\"lock\">◆</span>" : "") + "</b><span>" + (t.pro && !isPro() ? "Pro" : t.id) + "</span>";
+    b.onclick = () => { if (t.pro && !isPro()) { $("proModal").classList.add("open"); return; } tpl = t.id; save(); renderEditor(); renderCV(); };
+    tg.append(b);
+  });
+  const ag = $("accGrid"); ag.innerHTML = "";
+  ACCENTS.forEach(c => { const s = document.createElement("button"); s.className = "swatch" + (accent === c ? " on" : ""); s.style.background = c; s.setAttribute("aria-label", c); s.onclick = () => { accent = c; save(); renderEditor(); renderCV(); }; ag.append(s); });
+  renderCV();
+}
+function applyLang() {
+  $("tagline").textContent = T("tag"); $("edTitle").textContent = T("ed"); $("stCompleteL").textContent = T("complete");
+  $("stWordsL").textContent = T("words"); $("stSecsL").textContent = T("secs"); $("tplTitle").textContent = T("tpl");
+  $("accTitle").textContent = T("acc"); $("profTitle").textContent = T("prof"); $("lName").textContent = T("name");
+  $("lRole").textContent = T("role"); $("lPhone").textContent = T("phone"); $("lLoc").textContent = T("loc");
+  $("lSum").textContent = T("sum"); $("lPhoto").textContent = T("photo"); $("expTitle").textContent = T("exp");
+  $("eduTitle").textContent = T("edu"); $("skTitle").textContent = T("sk"); $("langTitle").textContent = T("lg");
+  $("privNote").textContent = T("priv"); $("stageHint").textContent = T("tip");
+  $("addExp").textContent = T("addJob"); $("addEdu").textContent = T("addSch"); $("addSk").textContent = T("addSk"); $("addLang").textContent = T("addLg");
+  $("langBtn").textContent = lang === "en" ? "EN" : "繁";
+  document.documentElement.lang = lang === "en" ? "en" : "zh-Hant";
+}
+/* ---------- bindings ---------- */
+[["fName", "name"], ["fRole", "role"], ["fEmail", "email"], ["fPhone", "phone"], ["fLoc", "loc"], ["fWeb", "web"], ["fSum", "summary"]].forEach(([id, key]) => {
+  $(id).oninput = e => { S.profile[key] = e.target.value; save(); renderCV(); };
+});
+$("fPhoto").onchange = e => { const f = e.target.files[0]; if (!f) return; const r = new FileReader(); r.onload = () => { photo = r.result; renderCV(); }; r.readAsDataURL(f); };
+$("addExp").onclick = () => { S.exp.push({ role: "", org: "", when: "", desc: "" }); save(); renderEditor(); };
+$("addEdu").onclick = () => { S.edu.push({ school: "", deg: "", when: "" }); save(); renderEditor(); };
+$("addSk").onclick = () => { S.skills.push({ n: "", l: 3 }); save(); renderEditor(); };
+$("addLang").onclick = () => { S.langs.push({ n: "", l: "" }); save(); renderEditor(); };
+$("sampleBtn").onclick = () => { S = JSON.parse(JSON.stringify(SAMPLE)); photo = ""; save(); renderEditor(); };
+$("printBtn").onclick = () => window.print();
+$("jsonBtn").onclick = () => { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify(S, null, 2)], { type: "application/json" })); a.download = "resume-mo.json"; a.click(); };
+$("loadBtn").onclick = () => $("fileIn").click();
+$("fileIn").onchange = e => { const f = e.target.files[0]; if (!f) return; const r = new FileReader(); r.onload = () => { try { const j = JSON.parse(r.result); if (j.profile) { S = j; save(); renderEditor(); } } catch (err) {} }; r.readAsText(f); };
+$("themeBtn").onclick = () => { theme = theme === "silver" ? "black" : theme === "black" ? "white" : "silver"; document.body.dataset.theme = theme; save(); };
+$("langBtn").onclick = () => { lang = lang === "en" ? "zh" : "en"; save(); applyLang(); renderEditor(); };
+$("proBtn").onclick = () => $("proModal").classList.add("open");
+$("proClose").onclick = () => $("proModal").classList.remove("open");
+$("proUnlock").onclick = async () => {
+  const key = $("proKey").value.trim(); if (!key) return; $("proMsg").textContent = "Checking…";
+  try {
+    const r = await fetch("https://openx-mo.vercel.app/api/pro/validate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ key }) });
+    const j = await r.json();
+    if (j.valid) { try { localStorage.setItem("openx-pro-ok", "1"); localStorage.setItem("openx-pro", key); } catch (e) {} $("proModal").classList.remove("open"); renderEditor(); }
+    else $("proMsg").textContent = "That key did not validate.";
+  } catch (e) { $("proMsg").textContent = "Could not reach the validation service — check your connection and try again."; }
+};
+document.body.dataset.theme = theme;
+applyLang(); renderEditor();
+</script>
+</body>
+</html>
