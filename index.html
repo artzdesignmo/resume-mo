@@ -57,25 +57,42 @@ textarea{resize:vertical;min-height:64px}
 @media(max-width:1100px){.sheet{transform:scale(.82);margin-bottom:-130px}}
 @media(max-width:900px){.sheet{transform:none;margin-bottom:0}}
 .cv{padding:48px 52px;height:100%;font-size:13.5px;line-height:1.5;--ac:var(--accent)}
-.cv h3{font-size:12px;letter-spacing:.14em;text-transform:uppercase;border-bottom:2px solid var(--ac);padding-bottom:4px;margin:20px 0 8px;color:var(--ac)}
-.cv .name{font-family:"Dela Gothic One",serif;font-size:34px;line-height:1.1;margin:0}
-.cv .role{font-size:16px;color:#555;margin:4px 0}
+.cv h3{font-size:11px;letter-spacing:.18em;text-transform:uppercase;border-bottom:1px solid var(--ac);padding-bottom:5px;margin:24px 0 9px;color:var(--ac)}
+.cv .name{font-family:"Playfair Display",Georgia,serif;font-weight:700;font-size:32px;line-height:1.12;margin:0;color:#1a1a1a}
+.cv .role{font-size:15px;color:#444;margin:5px 0 2px}
 .cv .meta{font-size:12px;color:#666}
 .cv .job{display:flex;justify-content:space-between;gap:12px}.cv .job b{font-size:14px}.cv .job .when{white-space:nowrap;color:#777;font-size:12px}
 .cv .job p,.cv .edu p{margin:2px 0 10px}
 .cv .skillrow{display:flex;align-items:center;gap:8px;margin:4px 0}.cv .skillrow span:first-child{width:110px}
 .cv .dots{letter-spacing:2px;color:var(--ac)}
+/* header row + avatar: one designed placement per template */
+.cv .headrow{display:flex;justify-content:space-between;align-items:flex-start;gap:24px}
+.cv .headmain{min-width:0}
+.cv .avatar{width:96px;height:96px;object-fit:cover;border-radius:50%;flex:none}
+.cv:not(.tpl-modern):not(.tpl-bold):not(.tpl-creative):not(.tpl-exec):not(.tpl-minimal) .headrow{border-bottom:2px solid #222;padding-bottom:16px}
+.cv .job .when{font-variant-numeric:tabular-nums}
 /* template variants */
-.cv.tpl-modern{display:grid;grid-template-columns:200px 1fr;gap:0;padding:0}
-.cv.tpl-modern .side{background:var(--ac);color:#fff;padding:36px 24px;height:100%}
-.cv.tpl-modern .side h3{color:#fff;border-color:rgba(255,255,255,.5)}
-.cv.tpl-modern .main{padding:36px 32px}
+.cv.tpl-modern{display:grid;grid-template-columns:216px 1fr;gap:0;padding:0}
+.cv.tpl-modern .side{background:var(--ac);color:#fff;padding:36px 26px;height:100%}
+.cv.tpl-modern .side h3{color:#fff;border-color:rgba(255,255,255,.45)}
+.cv.tpl-modern .side .avatar{width:128px;height:128px;border:3px solid rgba(255,255,255,.85);display:block;margin:0 auto 22px}
+.cv.tpl-modern .side .contact{font-size:12.5px;line-height:1.7;margin-bottom:6px;word-break:break-word}
+.cv.tpl-modern .side .contact div{margin-bottom:6px}
+.cv.tpl-modern .main{padding:38px 34px}
+.cv.tpl-modern .name{font-family:Inter,"Noto Sans TC",sans-serif;font-weight:700;font-size:30px}
+.cv.tpl-modern .role{color:var(--ac);font-weight:700}
 .cv.tpl-modern .side .skillrow{display:block}
 .cv.tpl-modern .side .skillrow span:first-child{width:auto}
 .cv.tpl-modern .side .dots{color:#fff}
-.cv.tpl-minimal{font-family:Georgia,serif}.cv.tpl-minimal .name{font-family:Georgia,serif;font-weight:400;letter-spacing:.02em}
+.cv.tpl-minimal{font-family:Georgia,serif;line-height:1.65;padding:56px 60px}
+.cv.tpl-minimal .name{font-family:Georgia,serif;font-weight:400;font-size:30px;letter-spacing:.01em}
+.cv.tpl-minimal h3{color:#222;border-color:#ccc;letter-spacing:.22em;margin:26px 0 10px}
+.cv.tpl-minimal .meta{color:#777}
+.cv.tpl-minimal .headrow{border-bottom:1px solid #ccc;padding-bottom:16px}
+.cv.tpl-minimal .avatar{width:76px;height:76px}
 .cv.tpl-bold .hero{background:#111;color:#fff;margin:-48px -52px 20px;padding:48px 52px}
-.cv.tpl-bold .hero .name{font-size:44px}.cv.tpl-bold .hero .role,.cv.tpl-bold .hero .meta{color:#ddd}
+.cv.tpl-bold .hero .name{font-family:"Dela Gothic One",sans-serif;font-size:44px}.cv.tpl-bold .hero .role,.cv.tpl-bold .hero .meta{color:#ddd}
+.cv.tpl-bold .avatar{width:110px;height:110px;border:3px solid rgba(255,255,255,.9)}
 .cv.tpl-creative{display:grid;grid-template-columns:1fr 210px;gap:28px}
 .cv.tpl-creative .side2{background:#f2f0ea;border-radius:14px;padding:18px}
 .cv.tpl-exec .topline{border-top:8px solid var(--ac);margin:-48px -52px 20px;padding:28px 52px 0}
@@ -87,7 +104,7 @@ textarea{resize:vertical;min-height:64px}
 @media print{
   body{background:#fff} header.top,main .panel,.stage>p,.hint,.modal{display:none!important}
   main{display:block;padding:0} .sheet{box-shadow:none;width:100%;max-width:none;transform:none;aspect-ratio:auto}
-  .cv{height:auto}
+  .cv{height:auto;print-color-adjust:exact;-webkit-print-color-adjust:exact}
 }
 </style>
 </head>
@@ -126,6 +143,7 @@ textarea{resize:vertical;min-height:64px}
     <div class="row"><div><label id="lLoc">Location</label><input type="text" id="fLoc"></div><div><label>Website</label><input type="text" id="fWeb"></div></div>
     <label id="lSum">Summary</label><textarea id="fSum"></textarea>
     <label id="lPhoto">Photo (stays on this device)</label><input type="file" id="fPhoto" accept="image/*">
+    <div id="photoPrev" style="margin-top:8px"></div>
     <h3 id="expTitle">Experience</h3><div id="expList"></div>
     <button class="btn" id="addExp">+ Add job</button>
     <h3 id="eduTitle">Education</h3><div id="eduList"></div>
@@ -174,7 +192,7 @@ const TPLS = [
 ];
 const ACCENTS = ["#3a6ea5", "#b7791f", "#2e7d5b", "#7a4a8c", "#b3402f", "#222222", "#0f766e", "#8a867e"];
 const ATS_WORDS = ["leadership", "design", "research", "prototype", "system", "data", "collaboration", "launch", "growth", "strategy"];
-let lang = "en", theme = "silver", tpl = "classic", accent = ACCENTS[0], photo = "";
+let lang = "en", theme = "silver", tpl = "classic", accent = ACCENTS[0];
 let S = JSON.parse(JSON.stringify(SAMPLE));
 try {
   const saved = JSON.parse(localStorage.getItem("resume-mo") || "null");
@@ -205,11 +223,19 @@ function renderCV() {
   const edu = S.edu.map(e => "<div class=\"job\"><div><b>" + esc(e.school) + "</b> · " + esc(e.deg) + "</div><span class=\"when\">" + esc(e.when) + "</span></div>").join("");
   const skills = S.skills.map(s => "<div class=\"skillrow\"><span>" + esc(s.n) + "</span><span class=\"dots\">" + dots(s.l) + "</span></div>").join("");
   const langs = S.langs.map(l => "<div>" + esc(l.n) + " — " + esc(l.l) + "</div>").join("");
-  const photoTag = photo ? "<img src=\"" + photo + "\" style=\"width:96px;height:96px;object-fit:cover;border-radius:50%;float:right;margin:0 0 12px 16px\">" : "";
-  const head = photoTag + "<p class=\"name\">" + esc(p.name || "Your Name") + "</p><p class=\"role\">" + esc(p.role) + "</p><p class=\"meta\">" + esc(meta) + "</p>";
+  const photoOK = typeof p.photo === "string" && p.photo.indexOf("data:image/") === 0;
+  const avatar = photoOK ? "<img class=\"avatar\" src=\"" + p.photo + "\" alt=\"\">" : "";
+  const nameRole = "<p class=\"name\">" + esc(p.name || "Your Name") + "</p><p class=\"role\">" + esc(p.role) + "</p>";
+  const metaP = meta ? "<p class=\"meta\">" + esc(meta) + "</p>" : "";
+  const head = "<div class=\"headrow\"><div class=\"headmain\">" + nameRole + metaP + "</div>" + avatar + "</div>";
+  const headModern = "<div class=\"headmain\">" + nameRole + "</div>";
   const body = (p.summary ? "<h3>Summary</h3><p>" + esc(p.summary) + "</p>" : "") + (exp ? "<h3>Experience</h3>" + exp : "") + (edu ? "<h3>Education</h3>" + edu : "");
   const side = (skills ? "<h3>Skills</h3>" + skills : "") + (langs ? "<h3>Languages</h3>" + langs : "");
-  if (tpl === "modern") cv.innerHTML = "<div class=\"side\">" + side + "</div><div class=\"main\">" + head + body + "</div>";
+  if (tpl === "modern") {
+    const contact = [p.email, p.phone, p.loc, p.web].filter(Boolean).map(c => "<div>" + esc(c) + "</div>").join("");
+    const sideModern = avatar + (contact ? "<div class=\"contact\">" + contact + "</div>" : "") + side;
+    cv.innerHTML = "<div class=\"side\">" + sideModern + "</div><div class=\"main\">" + headModern + body + "</div>";
+  }
   else if (tpl === "bold") cv.innerHTML = "<div class=\"hero\">" + head + "</div>" + body + side;
   else if (tpl === "creative") cv.innerHTML = "<div><div>" + head + "</div>" + body + "</div><div class=\"side2\">" + side + "</div>";
   else if (tpl === "exec") cv.innerHTML = "<div class=\"topline\">" + head + "</div>" + body + side;
@@ -248,7 +274,20 @@ function itemEditor(list, idx, fields, onChange) {
   del.onclick = () => { list.splice(idx, 1); save(); renderEditor(); };
   mini.append(up, dn, del); d.append(mini); return d;
 }
+function renderPhotoPrev() {
+  const el = $("photoPrev"); if (!el) return;
+  const ok = typeof S.profile.photo === "string" && S.profile.photo.indexOf("data:image/") === 0;
+  el.innerHTML = "";
+  if (!ok) return;
+  const img = document.createElement("img");
+  img.src = S.profile.photo;
+  img.style.cssText = "width:44px;height:44px;object-fit:cover;border-radius:50%;vertical-align:middle;margin-right:8px";
+  const btn = document.createElement("button"); btn.className = "chipbtn"; btn.textContent = "✕ Remove photo";
+  btn.onclick = () => { S.profile.photo = ""; save(); renderCV(); renderPhotoPrev(); };
+  el.append(img, btn);
+}
 function renderEditor() {
+  renderPhotoPrev();
   $("fName").value = S.profile.name; $("fRole").value = S.profile.role; $("fEmail").value = S.profile.email;
   $("fPhone").value = S.profile.phone; $("fLoc").value = S.profile.loc; $("fWeb").value = S.profile.web; $("fSum").value = S.profile.summary;
   const expEl = $("expList"); expEl.innerHTML = ""; S.exp.forEach((_, i) => expEl.append(itemEditor(S.exp, i, [{ key: "role", label: "Role" }, { key: "org", label: "Organisation" }, { key: "when", label: "Dates" }, { key: "desc", label: "Description", area: true }])));
@@ -283,12 +322,28 @@ function applyLang() {
 [["fName", "name"], ["fRole", "role"], ["fEmail", "email"], ["fPhone", "phone"], ["fLoc", "loc"], ["fWeb", "web"], ["fSum", "summary"]].forEach(([id, key]) => {
   $(id).oninput = e => { S.profile[key] = e.target.value; save(); renderCV(); };
 });
-$("fPhoto").onchange = e => { const f = e.target.files[0]; if (!f) return; const r = new FileReader(); r.onload = () => { photo = r.result; renderCV(); }; r.readAsDataURL(f); };
+$("fPhoto").onchange = e => {
+  const f = e.target.files[0]; if (!f) return;
+  const store = dataUrl => { S.profile.photo = dataUrl; save(); renderCV(); renderPhotoPrev(); };
+  const process = img => {
+    const side = Math.min(img.width, img.height);
+    const c = document.createElement("canvas"); c.width = c.height = 512;
+    c.getContext("2d").drawImage(img, (img.width - side) / 2, (img.height - side) / 2, side, side, 0, 0, 512, 512);
+    store(c.toDataURL("image/jpeg", 0.85));
+  };
+  const fallback = () => {
+    const r = new FileReader();
+    r.onload = () => { const img = new Image(); img.onload = () => process(img); img.src = r.result; };
+    r.readAsDataURL(f);
+  };
+  if (window.createImageBitmap) createImageBitmap(f, { imageOrientation: "from-image" }).then(process).catch(fallback);
+  else fallback();
+};
 $("addExp").onclick = () => { S.exp.push({ role: "", org: "", when: "", desc: "" }); save(); renderEditor(); };
 $("addEdu").onclick = () => { S.edu.push({ school: "", deg: "", when: "" }); save(); renderEditor(); };
 $("addSk").onclick = () => { S.skills.push({ n: "", l: 3 }); save(); renderEditor(); };
 $("addLang").onclick = () => { S.langs.push({ n: "", l: "" }); save(); renderEditor(); };
-$("sampleBtn").onclick = () => { S = JSON.parse(JSON.stringify(SAMPLE)); photo = ""; save(); renderEditor(); };
+$("sampleBtn").onclick = () => { S = JSON.parse(JSON.stringify(SAMPLE)); save(); renderEditor(); };
 $("printBtn").onclick = () => window.print();
 $("jsonBtn").onclick = () => { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify(S, null, 2)], { type: "application/json" })); a.download = "resume-mo.json"; a.click(); };
 $("loadBtn").onclick = () => $("fileIn").click();

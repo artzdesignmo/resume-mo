@@ -7,8 +7,8 @@ Open `index.html` in any browser and start typing. The sample résumé is fictio
 ## What it does
 
 - **Live A4 preview** — every keystroke re-renders the résumé instantly
-- **6 templates** — Classic, Modern, Minimal (free) + Bold, Creative, Executive (OpenX Pro)
-- **8 accent colours**, photo upload (stays on your device), skill dots, language levels
+- **6 templates** — Classic, Modern, Minimal (free) + Bold, Creative, Executive (OpenX Pro). The three free templates are professionally art-directed: editorial serif Classic, sidebar Modern, airy Minimal.
+- **8 accent colours**, avatar photo upload — auto-cropped to a square, downscaled on-device and saved with your résumé (never uploaded), placed per template (top of the sidebar in Modern, header in the rest), skill dots, language levels
 - **Add / reorder / remove** experience, education, skills and languages — up/down buttons included
 - **Completeness + word count** live stats; **ATS keyword check** (Pro) shows which hiring keywords your résumé already covers
 - **Print / Save as PDF** — print CSS shows only the A4 sheet, ready for A4 paper
@@ -29,7 +29,7 @@ Premium templates and the ATS keyword check are unlocked with a shared OpenX Pro
 
 ## Screenshot
 
-`screenshot.png` — the studio with the sample résumé in the Modern template (upload the screenshot to the repo root after pushing; the demo link below needs GitHub Pages enabled).
+`screenshot.png` — the studio with the sample résumé in the Modern template (local reference only).
 
 ## Demo
 
